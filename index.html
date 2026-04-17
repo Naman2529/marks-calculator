@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>marks App</title>
+</head>
+<body>
+    <h1>Student Mark Sheet</h1>
+    <div class="entryCard">
+        <form class="studentDetails" onSubmit="return storeDetails()">
+            <input type="text" placeholder="Enter Name" id="studentName">
+            <input type="number" placeholder="Marks(0-100)" min="0" max="100" id="studentMarks">
+            <button type="submit">Add</button>
+        </form>
+    </div>
+    <div class="wrapper">
+    <table class="StudentTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Grade</th>
+                    <th>Marks</th>
+                    <th>Result</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="marksList">
+                <tr>
+                    <td colspan="6" class="emptyRow">No students added yet.</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        <div class="finalDeets">
+            <div class="total">
+                <h1 id="totalStudents">0</h1>
+                <p>Total</p>
+            </div>
+            <div class="Passed">
+                <h1 id="passedStudents">0</h1>
+                <p>Passed</p>
+            </div>
+            <div class="Failed">
+                <h1 id="failedStudents">0</h1>
+                <p>Failed</p>
+            </div>
+            <div class="Avg">
+                <h1 id="classAvg">0</h1>
+                <p>Average</p>
+            </div>
+        </div>
+
+
+    <script>
+        let students=[];
+        let totalMarks=0;
+        const updateCards=()=>{
+            var failCount=0;
+            var passCount=0;
+            var totalCount=0;
+            var Avg=0;
+            totalMarks=0;
+            
+            students.forEach((student,index) =>{
+                totalCount+=1;
+                totalMarks+=student.marks;
+                if(student.marks<40){
+                    failCount+=1;
+                }
+                else{
+                    passCount+=1
+                }
+            });
+            if(totalCount>0){
+                Avg=totalMarks/totalCount;
+            }
+            else{
+                Avg=0;
+            }
+            document.getElementById('failedStudents').innerText=failCount;
+            document.getElementById('passedStudents').innerText=passCount;
+            document.getElementById('totalStudents').innerText=totalCount;
+            document.getElementById('classAvg').innerText=Avg;
+        }
+
+        const deleteStudent=(index)=>{
+            students.splice(index,1);
+            updateTable();
+            updateCards();
+        }
+        const updateTable=()=>{
+            var tbody=document.getElementById('marksList');
+            tbody.innerHTML="";
+            students.forEach((student,index) =>{
+                tbody.innerHTML+=`
+                <tr>
+                    <td>${index+1}</td>
+                    <td>${student.name}</td>
+                    <td>${student.grade}</td>
+                    <td>${student.marks}</td>
+                    <td>${student.result}</td>
+                    <td>
+                        <button onclick="deleteStudent(${index})">delete</button>
+                    </td>
+                </tr>
+                `;
+            });
+        }
+        const storeDetails=()=>{
+            var name=document.getElementById('studentName').value;
+            var marks=Number(document.getElementById('studentMarks').value);
+            if(name.length==0 || marks<0 || marks>100){
+                return false;
+            }
+            let grade="";
+            let result="";
+            if(marks>=90) grade="S";
+            else if(marks>=80 && marks<=90) grade="A";
+            else if(marks>=70 && marks<=80) grade="B";
+            else if(marks>=60 && marks<=70) grade="C";
+            else if(marks>=50 && marks<=60) grade="D";
+            else if(marks>=40 && marks<=50) grade="E";
+            else if( marks<=40) grade="F";
+
+            if(grade==="F"){
+                result="Fail";
+            }
+            else{
+                result="Pass";
+            }
+            students.push({
+                name,
+                marks,
+                grade,
+                result
+            });
+            updateTable();
+            updateCards();
+            return false;
+        }
+        
+    </script>
+    <style>
+        body{
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding:20px 20px;
+        }
+        .entryCard{
+            width:80%;
+            max-width:550px;
+            height:100px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin: 25px;
+            display:flex;
+            justify-content: center;
+        }
+        .studentDetails{
+            display:flex;
+            margin-top:20px;
+            gap:20px;
+            padding:15px 5px;
+        }
+        .studentDetails input{
+            height:100%;
+            max-height:30px;
+            width:100%;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border:none;
+            outline:none;
+            flex:2;
+        }
+        .studentDetails button{
+            height:60%;
+            max-height:30px;
+            width:90px;
+            flex:1;
+            background-color: aqua;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border:none;
+            outline:none;
+            cursor:pointer;
+        }
+        .wrapper{
+            margin-top: 60px;
+            gap:20px;
+            width:80%;
+            max-width:900px;
+            background:white;
+            overflow: hidden;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow:0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .StudentTable{
+            width:100%;
+            border-collapse: collapse;
+            text-align:center;
+        }
+
+        .StudentTable thead{
+            background:#173A6A;
+            color:white;
+            gap:30px;
+            text-align: center;
+            
+        }
+        .StudentTable th,
+        .StudentTable td{
+            padding: 15px;
+            text-align: center;
+        }
+
+        .marksTable tbody tr{
+            border-bottom: 1px solid #ddd;
+        }
+        .finalDeets div{
+            border-radius:15px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+            width: 100px;
+            text-align: center;
+        }
+        .finalDeets{
+            display: flex;
+            gap:50px;
+            margin-top:100px;
+        }
+        .total h1{
+            color:black;
+        }
+        .Passed h1{
+            color:lightgreen;
+        }
+        .Failed h1{
+            color:red;
+        }
+        .average h1{
+            color:black;
+        }
+    </style>
+    
+</body>
+</html>
